@@ -12,7 +12,7 @@ final class CustomSlider: UIView {
     var valueChanged: ((Double) -> Void)?
     var slider = UISlider()
     var titleView = UILabel()
-     
+    
     // MARK: - Constructors
     init(title: String, min: Double, max: Double) {
         super.init(frame: .zero)
@@ -50,9 +50,9 @@ final class CustomSlider: UIView {
         ])
     }
     
+    // MARK: -obj
     @objc
     private func sliderValueChanged() {
         valueChanged?(Double(slider.value))
     }
-    
 }

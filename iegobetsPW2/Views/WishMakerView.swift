@@ -1,13 +1,13 @@
 //
-//  WishMakerViewController.swift
+//  WishMakerView.swift
 //  iegobetsPW2
 //
-//  Created by Ivan on 30.10.2024.
+//  Created by Ivan on 02.11.2024.
 //
 
 import UIKit
 
-final class WishMakerViewController: UIViewController {
+class WishMakerView: UIView {
     // MARK: - Constants
     enum Constants {
         static let sliderMin: Double = 0
@@ -19,7 +19,7 @@ final class WishMakerViewController: UIViewController {
         static let alphaValue: CGFloat = 1
         
         static let stackRadius: CGFloat = 20
-        static let stackBottom: CGFloat = -40
+        static let stackBottom: CGFloat = 20
         static let stackLeading: CGFloat = 20
         
         static let titleFontSize: CGFloat = 32
@@ -51,29 +51,43 @@ final class WishMakerViewController: UIViewController {
         static let alertPlaceholder = "HEX format : #FFFFFF"
         static let alertSetActionTitle = "Set"
         static let alertCancelActionTitle = "Cancel"
+        
+        static let buttonHeight: Double = 50
+        static let buttonBottom: Double = 50
+        static let buttonSide: Double = 20
+        static let buttonText = "My wishes"
+        static let buttonRadius: Double = 20
     }
-    
+
     // MARK: - Variables
+    weak var delegate: WishMakerViewDelegate?
+    
     var titleLable = UILabel()
     var descriptionLable = UILabel()
     var stack = UIStackView()
     
+    var addWishButton: UIButton = UIButton(type: .system)
     var hideButton = UIButton()
     var randomColorButton = UIButton()
     var hexColorButton = UIButton()
     
     var stackIsHidden: Bool = false
     
-    // MARK: -Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: - Lifecycle
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         configureUI()
     }
     
-    // MARK: -Private methods
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Private methods
     private func configureUI() {
         configurateTitle()
         configureDescription()
+        configureAddWishButton()
         configureSliders()
         configurateHideButton()
         configurateRandomColorButton()
@@ -85,10 +99,10 @@ final class WishMakerViewController: UIViewController {
         titleLable.text = Constants.titleText
         titleLable.textColor = .white
         titleLable.font = UIFont.boldSystemFont(ofSize: Constants.titleFontSize)
-        view.addSubview(titleLable)
+        self.addSubview(titleLable)
         
-        titleLable.pinCenterX(to: view)
-        titleLable.pinTop(to: view.safeAreaLayoutGuide.topAnchor, Constants.titleTopAnchor)
+        titleLable.pinCenterX(to: self)
+        titleLable.pinTop(to: self.safeAreaLayoutGuide.topAnchor, Constants.titleTopAnchor)
     }
     
     private func configureDescription() {
@@ -96,16 +110,16 @@ final class WishMakerViewController: UIViewController {
         descriptionLable.text = Constants.descriptionText
         descriptionLable.textColor = .white
         descriptionLable.font = UIFont.boldSystemFont(ofSize: Constants.descriptionFontSize)
-        view.addSubview(descriptionLable)
+        self.addSubview(descriptionLable)
         
-        descriptionLable.pinLeft(to: view, Constants.descriptionLeftAnchor)
+        descriptionLable.pinLeft(to: self, Constants.descriptionLeftAnchor)
         descriptionLable.pinTop(to: titleLable.bottomAnchor, Constants.descriptionTopAnchor)
     }
     
     private func configureSliders() {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
-        view.addSubview(stack)
+        self.addSubview(stack)
         stack.layer.cornerRadius = Constants.stackRadius
         stack.clipsToBounds = true
         
@@ -129,12 +143,8 @@ final class WishMakerViewController: UIViewController {
             self?.updateBackgroundColor(red: Double(sliderRed.slider.value), green: Double(sliderGreen.slider.value), blue: value)
         }
         
-        stack.pinBottom(to: view, -1 * Constants.stackBottom) // bottom makes constant negative for us
-        stack.pinHorizontal(to: view, Constants.stackLeading)
-    }
-    
-    private func updateBackgroundColor(red: Double, green: Double, blue: Double) {
-        view.backgroundColor = UIColor(red: red, green: green, blue: blue, alpha: Constants.alphaValue)
+        stack.pinBottom(to: addWishButton.topAnchor, Constants.stackBottom)
+        stack.pinHorizontal(to: self, Constants.stackLeading)
     }
     
     private func configurateHideButton() {
@@ -145,52 +155,12 @@ final class WishMakerViewController: UIViewController {
         hideButton.addTarget(self, action: #selector(hideSliders), for: .touchUpInside)
     }
     
-    @objc
-    private func hideSliders() {
-        stackIsHidden.toggle()
-        let changedTitile = stackIsHidden ? Constants.buttonTestToShow : Constants.buttonTextToHide
-        hideButton.setTitle(changedTitile, for: .normal)
-        
-        UIView.animate(withDuration: Constants.animationDuration) {
-            for subview in self.stack.arrangedSubviews {
-                if let slider = subview as? CustomSlider {
-                    slider.isHidden.toggle()
-                }
-            }
-        }
-    }
-    
     private func configurateRandomColorButton() {
         stack.addArrangedSubview(randomColorButton)
         randomColorButton.setTitle(Constants.randomColorButtonText, for: .normal)
         randomColorButton.setTitleColor(.black, for: .normal)
         randomColorButton.backgroundColor = UIColor.white
         randomColorButton.addTarget(self, action: #selector(randomColor), for: .touchUpInside)
-    }
-    
-    @objc
-    private func randomColor() {
-        let randomRed = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
-        let randomGreen = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
-        let randomBlue = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
-        
-        changeSliders(red: randomRed, green: randomGreen, blue: randomBlue)
-        
-        view.backgroundColor = UIColor(red: CGFloat(randomRed), green: CGFloat(randomGreen), blue: CGFloat(randomBlue), alpha: Constants.alphaValue)
-    }
-    
-    private func changeSliders(red: Float, green: Float, blue: Float) {
-        for subview in self.stack.arrangedSubviews {
-            if let slider = subview as? CustomSlider {
-                if slider.titleView.text == Constants.red {
-                    slider.slider.value = red
-                } else if slider.titleView.text == Constants.green {
-                    slider.slider.value = green
-                } else if slider.titleView.text == Constants.blue {
-                    slider.slider.value = blue
-                }
-            }
-        }
     }
     
     private func configurateHEXColorButton() {
@@ -201,22 +171,22 @@ final class WishMakerViewController: UIViewController {
         hexColorButton.addTarget(self, action: #selector(hexColor), for: .touchUpInside)
     }
     
-    @objc
-    private func hexColor() {
-        let alert = UIAlertController(title: Constants.alertTitle, message: nil, preferredStyle: .alert)
+    private func configureAddWishButton() {
+        self.addSubview(addWishButton)
+        addWishButton.setHeight(Constants.buttonHeight)
+        addWishButton.pinBottom(to: self, Constants.buttonBottom)
+        addWishButton.pinHorizontal(to: self, Constants.buttonSide)
         
-        alert.addTextField { textField in
-            textField.placeholder = Constants.alertPlaceholder
-        }
+        addWishButton.backgroundColor = .white
+        addWishButton.setTitleColor(.systemPink, for: .normal)
+        addWishButton.setTitle(Constants.buttonText, for: .normal)
         
-        let setAction = UIAlertAction(title: Constants.alertSetActionTitle, style: .default) { [weak self] _ in
-            guard let textFields = alert.textFields?.first?.text else { return }
-            self?.changeColorUsingHEX(hex: textFields)
-        }
-        
-        alert.addAction(setAction)
-        alert.addAction(UIAlertAction(title: Constants.alertCancelActionTitle, style: .cancel))
-        present(alert, animated: true)
+        addWishButton.layer.cornerRadius = Constants.buttonRadius
+        addWishButton.addTarget(self, action: #selector(addWishButtonPressed), for: .touchUpInside)
+    }
+    
+    private func updateBackgroundColor(red: Double, green: Double, blue: Double) {
+        self.backgroundColor = UIColor(red: red, green: green, blue: blue, alpha: Constants.alphaValue)
     }
     
     private func changeColorUsingHEX(hex: String) {
@@ -239,8 +209,72 @@ final class WishMakerViewController: UIViewController {
                 }
                 
                 changeSliders(red: Float(r), green: Float(g), blue: Float(b))
-                view.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: Constants.alphaValue)
+                self.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: Constants.alphaValue)
             }
         }
+    }
+    
+    private func changeSliders(red: Float, green: Float, blue: Float) {
+        for subview in self.stack.arrangedSubviews {
+            if let slider = subview as? CustomSlider {
+                if slider.titleView.text == Constants.red {
+                    slider.slider.value = red
+                } else if slider.titleView.text == Constants.green {
+                    slider.slider.value = green
+                } else if slider.titleView.text == Constants.blue {
+                    slider.slider.value = blue
+                }
+            }
+        }
+    }
+    
+    // MARK: -obj
+    @objc
+    private func hideSliders() {
+        stackIsHidden.toggle()
+        let changedTitile = stackIsHidden ? Constants.buttonTestToShow : Constants.buttonTextToHide
+        hideButton.setTitle(changedTitile, for: .normal)
+        
+        UIView.animate(withDuration: Constants.animationDuration) {
+            for subview in self.stack.arrangedSubviews {
+                if let slider = subview as? CustomSlider {
+                    slider.isHidden.toggle()
+                }
+            }
+        }
+    }
+    
+    @objc
+    private func randomColor() {
+        let randomRed = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
+        let randomGreen = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
+        let randomBlue = Float.random(in: 0...Constants.colorComponentRangeMaxValue)
+        
+        changeSliders(red: randomRed, green: randomGreen, blue: randomBlue)
+        
+        self.backgroundColor = UIColor(red: CGFloat(randomRed), green: CGFloat(randomGreen), blue: CGFloat(randomBlue), alpha: Constants.alphaValue)
+    }
+    
+    @objc
+    private func hexColor() {
+        let alert = UIAlertController(title: Constants.alertTitle, message: nil, preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.placeholder = Constants.alertPlaceholder
+        }
+        
+        let setAction = UIAlertAction(title: Constants.alertSetActionTitle, style: .default) { [weak self] _ in
+            guard let textFields = alert.textFields?.first?.text else { return }
+            self?.changeColorUsingHEX(hex: textFields)
+        }
+        
+        alert.addAction(setAction)
+        alert.addAction(UIAlertAction(title: Constants.alertCancelActionTitle, style: .cancel))
+        delegate?.presentAlert(alert)
+    }
+    
+    @objc
+    private func addWishButtonPressed() {
+        delegate?.didPressAddWishButton()   
     }
 }
