@@ -41,6 +41,8 @@ class WishMakerView: UIView {
         static let redShift: UInt64 = 16
         static let greenShift: UInt64 = 8
         
+        static let buttomStackSpace: CGFloat = 20
+        
         static let titleText = "WishMaker"
         static let descriptionText = "Very good app"
         static let buttonTextToHide = "Hide"
@@ -51,11 +53,12 @@ class WishMakerView: UIView {
         static let alertPlaceholder = "HEX format : #FFFFFF"
         static let alertSetActionTitle = "Set"
         static let alertCancelActionTitle = "Cancel"
+        static let calendarButtonText = "Schedule wish granting"
+        static let buttonText = "My wishes"
         
         static let buttonHeight: Double = 50
         static let buttonBottom: Double = 50
         static let buttonSide: Double = 20
-        static let buttonText = "My wishes"
         static let buttonRadius: Double = 20
     }
 
@@ -64,14 +67,28 @@ class WishMakerView: UIView {
     
     var titleLable = UILabel()
     var descriptionLable = UILabel()
+    
     var stack = UIStackView()
+    var buttonStack = UIStackView()
     
     var addWishButton: UIButton = UIButton(type: .system)
     var hideButton = UIButton()
     var randomColorButton = UIButton()
     var hexColorButton = UIButton()
+    var calendarButton: UIButton = UIButton(type: .system)
     
     var stackIsHidden: Bool = false
+    
+    var color: UIColor = .white {
+        didSet {
+            hideButton.setTitleColor(color, for: .normal)
+            calendarButton.setTitleColor(color, for: .normal)
+            randomColorButton.setTitleColor(color, for: .normal)
+            hexColorButton.setTitleColor(color, for: .normal)
+            addWishButton.setTitleColor(color, for: .normal)
+            randomColorButton.setTitleColor(color, for: .normal)
+        }
+    }
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -87,7 +104,7 @@ class WishMakerView: UIView {
     private func configureUI() {
         configurateTitle()
         configureDescription()
-        configureAddWishButton()
+        configurateButtonStack()
         configureSliders()
         configurateHideButton()
         configurateRandomColorButton()
@@ -171,11 +188,24 @@ class WishMakerView: UIView {
         hexColorButton.addTarget(self, action: #selector(hexColor), for: .touchUpInside)
     }
     
+    private func configurateButtonStack() {
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        buttonStack.axis = .vertical
+        self.addSubview(buttonStack)
+        buttonStack.spacing = Constants.buttomStackSpace
+        
+        buttonStack.addArrangedSubview(addWishButton)
+        buttonStack.addArrangedSubview(calendarButton)
+        
+        buttonStack.pinBottom(to: self, Constants.buttonBottom)
+        buttonStack.pinHorizontal(to: self, Constants.buttonSide)
+        
+        configureAddWishButton()
+        configurateСalendarButton()
+    }
+    
     private func configureAddWishButton() {
-        self.addSubview(addWishButton)
         addWishButton.setHeight(Constants.buttonHeight)
-        addWishButton.pinBottom(to: self, Constants.buttonBottom)
-        addWishButton.pinHorizontal(to: self, Constants.buttonSide)
         
         addWishButton.backgroundColor = .white
         addWishButton.setTitleColor(.systemPink, for: .normal)
@@ -185,8 +215,19 @@ class WishMakerView: UIView {
         addWishButton.addTarget(self, action: #selector(addWishButtonPressed), for: .touchUpInside)
     }
     
+    private func configurateСalendarButton() {
+        calendarButton.setHeight(Constants.buttonHeight)
+        
+        calendarButton.backgroundColor = .white
+        calendarButton.setTitleColor(.systemPink, for: .normal)
+        calendarButton.setTitle(Constants.calendarButtonText, for: .normal)
+        
+        calendarButton.layer.cornerRadius = Constants.buttonRadius
+    }
+    
     private func updateBackgroundColor(red: Double, green: Double, blue: Double) {
         self.backgroundColor = UIColor(red: red, green: green, blue: blue, alpha: Constants.alphaValue)
+        color = UIColor(red: red, green: green, blue: blue, alpha: Constants.alphaValue)
     }
     
     private func changeColorUsingHEX(hex: String) {
@@ -209,7 +250,7 @@ class WishMakerView: UIView {
                 }
                 
                 changeSliders(red: Float(r), green: Float(g), blue: Float(b))
-                self.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: Constants.alphaValue)
+                updateBackgroundColor(red: r, green: g, blue: b)
             }
         }
     }
@@ -252,7 +293,7 @@ class WishMakerView: UIView {
         
         changeSliders(red: randomRed, green: randomGreen, blue: randomBlue)
         
-        self.backgroundColor = UIColor(red: CGFloat(randomRed), green: CGFloat(randomGreen), blue: CGFloat(randomBlue), alpha: Constants.alphaValue)
+        updateBackgroundColor(red: CGFloat(randomRed), green: CGFloat(randomGreen), blue: CGFloat(randomBlue))
     }
     
     @objc
