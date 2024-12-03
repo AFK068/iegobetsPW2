@@ -10,6 +10,7 @@ import UIKit
 // MARK: -Protocols
 protocol WishMakerViewDelegate: AnyObject {
     func didPressAddWishButton()
+    func didPressScheduleWishButton()
     func presentAlert(_ alert: UIAlertController)
 }
 
@@ -32,6 +33,11 @@ final class WishMakerViewController: UIViewController, WishMakerViewDelegate {
     
     func presentAlert(_ alert: UIAlertController) {
         present(alert, animated: true, completion: nil)
+    }
+    
+    func didPressScheduleWishButton() {
+        let vc = WishCalendarViewController()
+        navigationController?.pushViewController(vc, animated: false)
     }
     
     // MARK: -Private methods

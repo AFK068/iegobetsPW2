@@ -223,6 +223,7 @@ class WishMakerView: UIView {
         calendarButton.setTitle(Constants.calendarButtonText, for: .normal)
         
         calendarButton.layer.cornerRadius = Constants.buttonRadius
+        calendarButton.addTarget(self, action: #selector(scheduleWishButtonPressed), for: .touchUpInside)
     }
     
     private func updateBackgroundColor(red: Double, green: Double, blue: Double) {
@@ -317,5 +318,10 @@ class WishMakerView: UIView {
     @objc
     private func addWishButtonPressed() {
         delegate?.didPressAddWishButton()   
+    }
+    
+    @objc
+    private func scheduleWishButtonPressed() {
+        delegate?.didPressScheduleWishButton()
     }
 }
