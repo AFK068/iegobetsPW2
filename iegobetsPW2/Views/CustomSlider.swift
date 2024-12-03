@@ -8,8 +8,19 @@
 import UIKit
 
 final class CustomSlider: UIView {
+    // MARK: - Constants
+    private enum Constants {
+        static let backgroundColor: UIColor = .white
+        static let titleTopPadding: CGFloat = 10
+        static let titleLeadingPadding: CGFloat = 20
+        static let sliderBottomPadding: CGFloat = 10
+        static let sliderLeadingPadding: CGFloat = 20
+    }
+    
     // MARK: - Variables
     var valueChanged: ((Double) -> Void)?
+    
+    // MARK: - UI Components
     var slider = UISlider()
     var titleView = UILabel()
     
@@ -30,7 +41,7 @@ final class CustomSlider: UIView {
     
     // MARK: -Private methods
     private func configureUI() {
-        backgroundColor = .white
+        backgroundColor = Constants.backgroundColor
         translatesAutoresizingMaskIntoConstraints = false
         
         for view in [slider, titleView] {
@@ -40,13 +51,13 @@ final class CustomSlider: UIView {
         
         NSLayoutConstraint.activate([
             titleView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            titleView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            titleView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.titleTopPadding),
+            titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.titleLeadingPadding),
             
             slider.topAnchor.constraint(equalTo: titleView.bottomAnchor),
             slider.centerXAnchor.constraint(equalTo: centerXAnchor),
-            slider.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-            slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+            slider.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Constants.sliderBottomPadding),
+            slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.sliderLeadingPadding)
         ])
     }
     

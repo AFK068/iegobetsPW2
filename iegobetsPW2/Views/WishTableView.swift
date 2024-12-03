@@ -13,6 +13,8 @@ class WishTableView: UIView {
         static let tableCornerRadius: Double = 20
         static let tableOffset: Double = 10
         static let numberOfSections = 2
+        
+        static let tableBackgroundColor: UIColor = .gray
     }
     
     // MARK: - UI Components
@@ -57,7 +59,7 @@ class WishTableView: UIView {
     
     private func configureTable() {
         self.addSubview(table)
-        table.backgroundColor = .gray
+        table.backgroundColor = Constants.tableBackgroundColor
         table.separatorStyle = .none
         table.layer.cornerRadius = Constants.tableCornerRadius
         

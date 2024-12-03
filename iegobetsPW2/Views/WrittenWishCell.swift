@@ -15,6 +15,8 @@ final class WrittenWishCell: UITableViewCell {
         static let wrapOffsetV: CGFloat = 5
         static let wrapOffsetH: CGFloat = 10
         static let wishLabelOffset: CGFloat = 8
+        static let deleteButtonCornerRadius: CGFloat = 5
+        static let numbersOfLines = 0
         
         static let deleteButtonTextColor: UIColor = .black
         static let deleteButtonBackgroundColor: UIColor = .gray
@@ -22,6 +24,8 @@ final class WrittenWishCell: UITableViewCell {
         
         static let deleteButtonText: String = "Delete"
         static let deleteButtonTitleLabelFont: UIFont = .systemFont(ofSize: 14)
+        
+        static let stackAxis: NSLayoutConstraint.Axis = .vertical
     }
     
     static let reuseId: String = "WrittenWishCell"
@@ -69,22 +73,21 @@ final class WrittenWishCell: UITableViewCell {
         wrap.pinVertical(to: self, Constants.wrapOffsetV)
         wrap.pinHorizontal(to: self, Constants.wrapOffsetH)
         
-        stackView.axis = .vertical
+        stackView.axis = Constants.stackAxis
         stackView.spacing = Constants.wishLabelOffset
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         wrap.addSubview(stackView)
         
         stackView.pinHorizontal(to: wrap, Constants.wishLabelOffset)
         stackView.pinVertical(to: wrap, Constants.wishLabelOffset)
         
-        wishLabel.numberOfLines = 0
+        wishLabel.numberOfLines = Constants.numbersOfLines
         
         deleteButton.setTitle(Constants.deleteButtonText, for: .normal)
         deleteButton.setTitleColor(Constants.deleteButtonTextColor, for: .normal)
         deleteButton.titleLabel?.font = Constants.deleteButtonTitleLabelFont
         deleteButton.backgroundColor = Constants.deleteButtonBackgroundColor
         deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
-        deleteButton.layer.cornerRadius = 5
+        deleteButton.layer.cornerRadius = Constants.deleteButtonCornerRadius
     }
     
     // MARK: -objc

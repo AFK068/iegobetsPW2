@@ -62,9 +62,8 @@ class WishMakerView: UIView {
         static let buttonRadius: Double = 20
     }
 
-    // MARK: - Variables
-    weak var delegate: WishMakerViewDelegate?
     
+    // MARK: - UI Components
     var titleLable = UILabel()
     var descriptionLable = UILabel()
     
@@ -77,8 +76,9 @@ class WishMakerView: UIView {
     var hexColorButton = UIButton()
     var calendarButton: UIButton = UIButton(type: .system)
     
+    // MARK: - Variables
     var stackIsHidden: Bool = false
-    
+
     var color: UIColor = .white {
         didSet {
             hideButton.setTitleColor(color, for: .normal)
@@ -89,6 +89,9 @@ class WishMakerView: UIView {
             randomColorButton.setTitleColor(color, for: .normal)
         }
     }
+    
+    // MARK: - Delegates
+    weak var delegate: WishMakerViewDelegate?
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -112,7 +115,6 @@ class WishMakerView: UIView {
     }
     
     private func configurateTitle() {
-        titleLable.translatesAutoresizingMaskIntoConstraints = false
         titleLable.text = Constants.titleText
         titleLable.textColor = .white
         titleLable.font = UIFont.boldSystemFont(ofSize: Constants.titleFontSize)
@@ -123,7 +125,6 @@ class WishMakerView: UIView {
     }
     
     private func configureDescription() {
-        descriptionLable.translatesAutoresizingMaskIntoConstraints = false
         descriptionLable.text = Constants.descriptionText
         descriptionLable.textColor = .white
         descriptionLable.font = UIFont.boldSystemFont(ofSize: Constants.descriptionFontSize)
@@ -134,7 +135,6 @@ class WishMakerView: UIView {
     }
     
     private func configureSliders() {
-        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         self.addSubview(stack)
         stack.layer.cornerRadius = Constants.stackRadius
